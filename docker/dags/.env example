@@ -1,14 +1,14 @@
 # ---------- MinIO Configuration ----------
-MINIO_ENDPOINT=http://minio:9000
-MINIO_ACCESS_KEY=admin
-MINIO_SECRET_KEY=admin123
-MINIO_BUCKET=spotify-raw
-# MINIO_PREFIX=bronze/date=
+MINIO_ENDPOINT=
+MINIO_ACCESS_KEY=
+MINIO_SECRET_KEY=
+MINIO_BUCKET=
+# MINIO_PREFIX=
 
 # ---------- Snowflake Configuration ----------
-SNOWFLAKE_DB = "SPOTIFY_DB"
-SNOWFLAKE_SCHEMA = "RAW"
-SNOWFLAKE_TABLE = "SPOTIFY_TOP_TRACKS_RAW"
+SNOWFLAKE_DB=
+SNOWFLAKE_SCHEMA=
+SNOWFLAKE_TABLE=
 
 # ---------- Local File ----------
-LOCAL_TEMP_PATH=/tmp/spotify_raw.json
+LOCAL_TEMP_PATH=
