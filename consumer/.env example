@@ -1,0 +1,13 @@
+# ---------- MinIO Configuration ----------
+MINIO_ENDPOINT=<minio_endpoint>
+MINIO_ACCESS_KEY=<minio_access_key>
+MINIO_SECRET_KEY=<minio_secret_key>
+MINIO_BUCKET=<minio_bucket>
+
+# ---------- Kafka Configuration ----------
+KAFKA_TOPIC=<kafka_topic>
+KAFKA_BOOTSTRAP_SERVERS=<kafka_bootstrap_servers>
+KAFKA_GROUP_ID=<kafka_group_id>
+
+# ---------- Batch Settings ----------
+BATCH_SIZE=<batch_size>

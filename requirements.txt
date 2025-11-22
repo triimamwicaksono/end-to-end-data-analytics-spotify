@@ -1,0 +1,9 @@
+python-dotenv
+boto3
+dbt-core
+dbt-snowflake
+snowflake-connector-python
+kafka-python
+spotipy
+apache-airflow-providers-snowflake
+apache-airflow-providers-amazon

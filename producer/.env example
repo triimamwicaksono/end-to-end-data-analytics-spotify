@@ -1,0 +1,10 @@
+# ---------- SPOTIFY Configuration ----------
+SPOTIFY_CLIENT_ID=
+SPOTIFY_CLIENT_SECRET=
+SPOTIFY_REDIRECT_URI=
+
+
+# ---------- Kafka Configuration ----------
+KAFKA_BOOTSTRAP_SERVERS=
+KAFKA_TOPIC=
+
