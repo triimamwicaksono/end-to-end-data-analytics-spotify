@@ -1,4 +1,4 @@
-name: dbt CI/CD
+name: dbt CI
 
 on:
   push:
@@ -7,53 +7,48 @@ on:
     branches: [ "main" ]
 
 jobs:
-  dbt-build:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: "3.11"
 
-      - name: Install dbt-core and dbt-snowflake
-        run: |
-          pip install --upgrade pip
-          pip install dbt-core dbt-snowflake
+      - name: Install dbt-snowflake
+        run: pip install dbt-snowflake
 
-      - name: Create profiles.yml
+      - name: Create dbt profiles.yml
         run: |
           mkdir -p ~/.dbt
-          cat > ~/.dbt/profiles.yml <<EOF
-          spotify_dbt:
-            target: prod
+          cat <<EOF > ~/.dbt/profiles.yml
+          spotify_project:
+            target: dev
             outputs:
-              prod:
+              dev:
                 type: snowflake
                 account: ${{ secrets.SNOWFLAKE_ACCOUNT }}
                 user: ${{ secrets.SNOWFLAKE_USER }}
                 password: ${{ secrets.SNOWFLAKE_PASSWORD }}
                 role: ${{ secrets.SNOWFLAKE_ROLE }}
-                warehouse: ${{ secrets.SNOWFLAKE_WH }}
-                database: ${{ secrets.SNOWFLAKE_DB }}
+                database: ${{ secrets.SNOWFLAKE_DATABASE }}
+                warehouse: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
                 schema: ${{ secrets.SNOWFLAKE_SCHEMA }}
-                threads: 4
-                client_session_keep_alive: false
+                threads: 1
           EOF
 
-      - name: Install dbt dependencies
-        run: dbt deps --project-dir .
+      - name: Run dbt deps
+        run: dbt deps
 
       - name: Run dbt build (run + test)
-        run: dbt build --project-dir .
+        run: dbt build
 
-      - name: Upload dbt artifacts
-        uses: actions/upload-artifact@v3
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
         with:
-          name: dbt-artifacts
-          path: |
-            target/
-            logs/
+          name: dbt-target
+          path: target/
