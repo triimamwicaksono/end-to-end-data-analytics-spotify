@@ -6,7 +6,7 @@ select
     f.popularity,
     f.rank,
     f.file_name,
-    f.ingested_at
+    f.ingested_at,
     t.duration_seconds,
     t.duration_ms
 from {{ ref('fact_top_tracks') }} f
