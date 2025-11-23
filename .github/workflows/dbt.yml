@@ -1,0 +1,59 @@
+name: dbt CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  dbt-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install dbt-core and dbt-snowflake
+        run: |
+          pip install --upgrade pip
+          pip install dbt-core dbt-snowflake
+
+      - name: Create profiles.yml
+        run: |
+          mkdir -p ~/.dbt
+          cat > ~/.dbt/profiles.yml <<EOF
+          spotify_dbt:
+            target: prod
+            outputs:
+              prod:
+                type: snowflake
+                account: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+                user: ${{ secrets.SNOWFLAKE_USER }}
+                password: ${{ secrets.SNOWFLAKE_PASSWORD }}
+                role: ${{ secrets.SNOWFLAKE_ROLE }}
+                warehouse: ${{ secrets.SNOWFLAKE_WH }}
+                database: ${{ secrets.SNOWFLAKE_DB }}
+                schema: ${{ secrets.SNOWFLAKE_SCHEMA }}
+                threads: 4
+                client_session_keep_alive: false
+          EOF
+
+      - name: Install dbt dependencies
+        run: dbt deps --project-dir .
+
+      - name: Run dbt build (run + test)
+        run: dbt build --project-dir .
+
+      - name: Upload dbt artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: dbt-artifacts
+          path: |
+            target/
+            logs/
