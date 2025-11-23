@@ -1,11 +1,12 @@
-name: Run dbt on Snowflake
+name: dbt CI
 
 on:
   push:
     branches: ["main"]
+  pull_request:
 
 jobs:
-  dbt-run:
+  dbt:
     runs-on: ubuntu-latest
 
     steps:
@@ -15,28 +16,32 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.11"
+          python-version: "3.10"
 
-      - name: Install dbt-snowflake
+      - name: Install dbt-core and dbt-snowflake
         run: |
-          pip install dbt-snowflake
+          pip install dbt-core dbt-snowflake
 
-      - name: Create dbt profiles.yml from GitHub Secrets
+      - name: Create dbt profiles directory
         run: |
           mkdir -p ~/.dbt
-          cat > ~/.dbt/profiles.yml << 'EOF'
+          echo "Creating profiles.yml"
+
+      - name: Generate profiles.yml using GitHub Secrets
+        run: |
+          cat <<EOF > ~/.dbt/profiles.yml
           spotify_dbt:
             target: dev
             outputs:
               dev:
                 type: snowflake
-                account: "${SNOWFLAKE_ACCOUNT}"
-                user: "${SNOWFLAKE_USER}"
-                password: "${SNOWFLAKE_PASSWORD}"
-                role: "${SNOWFLAKE_ROLE}"
-                warehouse: "${SNOWFLAKE_WH}"
-                database: "${SNOWFLAKE_DB}"
-                schema: "${SNOWFLAKE_SCHEMA}"
+                account: ${SNOWFLAKE_ACCOUNT}
+                user: ${SNOWFLAKE_USER}
+                password: ${SNOWFLAKE_PASSWORD}
+                role: ${SNOWFLAKE_ROLE}
+                database: ${SNOWFLAKE_DB}
+                warehouse: ${SNOWFLAKE_WH}
+                schema: ${SNOWFLAKE_SCHEMA}
                 threads: 4
                 client_session_keep_alive: False
           EOF
@@ -45,15 +50,26 @@ jobs:
           SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
           SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
           SNOWFLAKE_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
-          SNOWFLAKE_WH: ${{ secrets.SNOWFLAKE_WH }}
           SNOWFLAKE_DB: ${{ secrets.SNOWFLAKE_DB }}
           SNOWFLAKE_SCHEMA: ${{ secrets.SNOWFLAKE_SCHEMA }}
+          SNOWFLAKE_WH: ${{ secrets.SNOWFLAKE_WH }}
 
-      - name: Run dbt deps
-        run: dbt deps
+      - name: Install dependencies (dbt deps)
+        run: |
+          cd spotify-dbt/spotify_dbt
+          dbt deps
 
-      - name: Run dbt run
-        run: dbt run
+      - name: Run dbt seed (if any)
+        run: |
+          cd spotify-dbt/spotify_dbt
+          dbt seed --full-refresh
 
-      - name: Run dbt test
-        run: dbt test
+      - name: Run dbt models
+        run: |
+          cd spotify-dbt/spotify_dbt
+          dbt run
+
+      - name: Run dbt tests
+        run: |
+          cd spotify-dbt/spotify_dbt
+          dbt test
