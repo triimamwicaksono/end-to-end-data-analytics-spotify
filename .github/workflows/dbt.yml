@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up Python
@@ -37,18 +37,14 @@ jobs:
                 role: ${{ secrets.SNOWFLAKE_ROLE }}
                 database: ${{ secrets.SNOWFLAKE_DATABASE }}
                 warehouse: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
-                schema: ${{ secrets.SNOWFLAKE_SCHEMA }}
-                threads: 1
+                schema: TRANSFORM
+                threads: 4
           EOF
 
       - name: Run dbt deps
+        working-directory: ./spotify-dbt/spotify_dbt
         run: dbt deps
 
-      - name: Run dbt build (run + test)
+      - name: Run dbt build
+        working-directory: ./spotify-dbt/spotify_dbt
         run: dbt build
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: dbt-target
-          path: target/
