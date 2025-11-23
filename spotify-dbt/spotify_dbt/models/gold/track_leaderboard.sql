@@ -7,6 +7,8 @@ select
     f.rank,
     f.file_name,
     f.ingested_at
+    t.duration_seconds,
+    t.duration_ms
 from {{ ref('fact_top_tracks') }} f
 left join {{ ref('dim_track') }} t
     on f.track_id = t.track_id
