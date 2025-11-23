@@ -1,0 +1,11 @@
+version: 2
+
+models:
+  - name: track_leaderboard
+    description: "Sorted track leaderboard based on Spotify popularity and rank."
+
+  - name: artist_summary
+    description: "Artist-level summary of track counts and popularity metrics."
+
+  - name: album_summary
+    description: "Album-level aggregated metrics such as track count and avg popularity."

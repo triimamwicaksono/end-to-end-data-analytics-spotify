@@ -1,0 +1,28 @@
+version: 2
+
+models:
+  - name: spotify_raw
+    description: "Bronze view that mirrors the raw Spotify top tracks ingested from MinIO"
+    columns:
+      - name: rank
+        description: "Track ranking number"
+      - name: track_id
+        description: "Unique Spotify track identifier"
+      - name: track_name
+        description: "Name of the track"
+      - name: artist_id
+        description: "Unique Spotify artist identifier"
+      - name: artist_name
+        description: "Name of the artist"
+      - name: album_name
+        description: "Album where the track appears"
+      - name: popularity
+        description: "Spotify popularity score"
+      - name: duration_ms
+        description: "Duration of the track in milliseconds"
+      - name: ingested_at
+        description: "Unix timestamp when the track was fetched from Spotify API"
+      - name: file_name
+        description: "Name of the MinIO file used for ingestion"
+      - name: load_time
+        description: "Timestamp when Snowflake loaded the record"
